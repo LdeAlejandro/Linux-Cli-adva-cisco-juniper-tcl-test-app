@@ -1,10 +1,10 @@
 cat << 'EOF' > variaveis_ambiente.sh
 #!/bin/bash
 
-export USER_JUNIPER=XXXXXX
-export PASS_JUNIPER=XXXXXX
-export USER_NID=XXXXX
-export PASS_NID=XXXXX
+export USER_JUNIPER=seuusuario
+export PASS_JUNIPER=suasenha
+export USER_NID=seuusuario
+export PASS_NID=suasenha
 EOF
 chmod +x variaveis_ambiente.sh
 source variaveis_ambiente.sh

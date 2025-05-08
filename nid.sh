@@ -18,15 +18,15 @@ cat << 'EOF' > nid.exec
 # Checa se o usuário pediu ajuda ou não passou os argumentos necessários
 if { $argc < 2 || [lindex $argv 0] in {"--help" "-h"} } {
     puts "\n USO DO SCRIPT:"
-    puts "  ./nid.exec <device> <interface>\n"
+    puts " nid <device> <interface>\n"
     puts "VARIÁVEIS NECESSÁRIAS:"
-    puts "  número de porta do cliente → um número só"
-    puts " número de porta da lec → um número só" 
+    puts "Ip do NID"
+    puts "número de porta do cliente → um número só"
+    puts "número de porta da lec → um número só" 
     puts "EXEMPLO:"
-    puts " IP_DO_NID NUMERO_DE_PORTA_LEC NUMERO_DE_PORTA_CLIENTE "
-    puts " 10.226.126.112 1 3"
+    puts "IP_DO_NID NUMERO_DE_PORTA_LEC NUMERO_DE_PORTA_CLIENTE "
+    puts "Comando de exemplo: nid 10.226.126.112 1 3"
     exit 0
-    
 }
 
 

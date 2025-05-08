@@ -99,7 +99,7 @@ expect {
     }  
 }     
 
-send "sh l2vpn forwarding bridge-domain mac-address location 0/0/CPU0 | i $interface\r"
+send " sh l2vpn forwarding bridge-domain mac-address location 0/0/CPU0 | i $interface\r"
 
 # Verificar resposta
 expect {
