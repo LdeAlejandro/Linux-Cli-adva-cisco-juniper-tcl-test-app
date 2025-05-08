@@ -1,5 +1,7 @@
 cat << 'EOF' > juniper
 #!/bin/bash
+#Created by Alejandro Amoroso
+#Github: https://github.com/LdeAlejandro
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -16,7 +18,6 @@ if [[ "$1" == "--help" || "$1" == "-h" || $# -lt 2 ]]; then
   echo "📘 EXEMPLO:"
   echo "  juniper 192.168.1.1 G0/0/3.100"
   echo ""
-  echo "ℹ️  As credenciais devem estar definidas em variaveis_ambiente.sh"
   echo ""
   exit 0
 fi
@@ -34,6 +35,8 @@ chmod +x juniper
 
 cat << 'EOF' > juniper.exec
 #!/usr/bin/expect -f
+#Created by Alejandro Amoroso
+#Github: https://github.com/LdeAlejandro
 
 # Checa se o usuário pediu ajuda ou não passou os argumentos necessários
 if { $argc < 2 || [lindex $argv 0] in {"--help" "-h"} } {

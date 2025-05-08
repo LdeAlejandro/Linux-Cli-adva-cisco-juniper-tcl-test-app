@@ -1,6 +1,9 @@
 cat << 'EOF' > nid
 #!/bin/bash
 
+#Created by Alejandro Amoroso
+#Github: https://github.com/LdeAlejandro
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Carrega variáveis de ambiente
@@ -14,6 +17,8 @@ chmod +x nid
 
 cat << 'EOF' > nid.exec
 #!/usr/bin/expect -f
+#Created by Alejandro Amoroso
+#Github: https://github.com/LdeAlejandro
 
 # Checa se o usuário pediu ajuda ou não passou os argumentos necessários
 if { $argc < 2 || [lindex $argv 0] in {"--help" "-h"} } {

@@ -1,6 +1,9 @@
 cat << 'EOF' > variaveis_ambiente.sh
 #!/bin/bash
 
+#Created by Alejandro Amoroso
+#Github: https://github.com/LdeAlejandro
+
 export USER_JUNIPER=seuusuario
 export PASS_JUNIPER=suasenha
 export USER_NID=seuusuario
@@ -17,3 +20,4 @@ mkdir -p ~/.local/bin
 mv variaveis_ambiente.sh ~/.local/bin/
 echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
 source ~/.bashrc
+
