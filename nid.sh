@@ -19,7 +19,6 @@ cat << 'EOF' > nid.exec
 #!/usr/bin/expect -f
 #Created by Alejandro Amoroso
 #Github: https://github.com/LdeAlejandro
-
 # Checa se o usuário pediu ajuda ou não passou os argumentos necessários
 if { $argc < 2 || [lindex $argv 0] in {"--help" "-h"} } {
     puts "\n USO DO SCRIPT:"
