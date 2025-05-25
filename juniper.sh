@@ -69,11 +69,7 @@ if { $device eq ""} {
     puts "\nErro: Dispositivo não especificado."
     puts "Use: juniper -h, para obter mais ajuda em caso de dúvidas.\n"
     exit 1
-} elseif {$user ne "" && $password ne ""} {
-    puts "\nErro: Usuário ou senha não especificados."
-    puts "Use: juniper -h, para obter mais ajuda em caso de dúvidas.\n"
-    exit 1
-} 
+}
 
 #teste de macs
 # Guardar o valor da interface fisica
