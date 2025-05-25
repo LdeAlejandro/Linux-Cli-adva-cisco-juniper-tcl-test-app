@@ -47,7 +47,7 @@ set device [lindex $argv 0]
 set firstArg [lindex $argv 1]
 set secondArg [lindex $argv 2]
 set user $env(USER_CPE)
-set password $env(USER_CPE)
+set password $env(PASS_CPE)
 set command_responses ""
 set final_report "=========================\n"
 
