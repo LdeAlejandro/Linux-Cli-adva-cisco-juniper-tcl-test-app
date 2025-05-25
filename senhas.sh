@@ -8,6 +8,8 @@ export USER_JUNIPER=seuusuario
 export PASS_JUNIPER=suasenha
 export USER_NID=seuusuario
 export PASS_NID=suasenha
+export USER_CPE=seuusuario
+export USER_CPE=suasenha
 EOF
 chmod +x variaveis_ambiente.sh
 source variaveis_ambiente.sh

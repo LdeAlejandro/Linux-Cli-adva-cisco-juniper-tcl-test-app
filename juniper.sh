@@ -3,24 +3,8 @@ cat << 'EOF' > juniper
 #Created by Alejandro Amoroso
 #Github: https://github.com/LdeAlejandro
 
+# Define o diretório absoluto onde o script está localizado
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-# Mostrar ajuda direto aqui, sem chamar expect
-if [[ "$1" == "--help" || "$1" == "-h" || $# -lt 2 ]]; then
-  echo ""
-  echo "🔧 USO DO SCRIPT:"
-  echo "  juniper <device> <interface>"
-  echo ""
-  echo "📥 VARIÁVEIS NECESSÁRIAS:"
-  echo "  <device>     → IP ou hostname do equipamento (ex: 192.168.0.1)"
-  echo "  <interface>  → Nome da interface a ser verificada (ex: G0/0/3.999)"
-  echo ""
-  echo "📘 EXEMPLO:"
-  echo "  juniper 192.168.1.1 G0/0/3.100"
-  echo ""
-  echo ""
-  exit 0
-fi
 
 # Carrega variáveis de ambiente
 source "$SCRIPT_DIR/variaveis_ambiente.sh"
@@ -28,8 +12,6 @@ source "$SCRIPT_DIR/variaveis_ambiente.sh"
 # Executa o script expect com os argumentos recebidos
 expect "$SCRIPT_DIR/juniper.exec" "$1" "$2"
 EOF
-
-
 
 chmod +x juniper
 
@@ -40,16 +22,21 @@ cat << 'EOF' > juniper.exec
 
 # Checa se o usuário pediu ajuda ou não passou os argumentos necessários
 if { $argc < 2 || [lindex $argv 0] in {"--help" "-h"} } {
-    puts "\n USO DO SCRIPT:"
-    puts "  ./juniper.exec <device> <interface>\n"
-    puts "VARIÁVEIS NECESSÁRIAS:"
-    puts "  <device>     → IP ou hostname do equipamento (ex: 192.168.0.1)"
+    puts "\n"
+    puts "Documentação dos comandos juniper"
+    puts "  <device>     → IP ou hostname do equipamento (ex: 192.168.0.1 ou CTIABZAXXXXX)"
     puts "  <interface>  → Nome da interface a ser verificada (ex: GigabitEthernet0/0/3)"
     puts ""
-    puts "EXEMPLO:"
-    puts "  juniper 192.168.1.1 G0/0/3.938712639812"
+    puts "  EXEMPLOs:"
+    puts "  Para verificar se a interface esta aprendendo MCAS:"
+    puts "  juniper <device> <interface>"
+    puts "  Exemplo: juniper CTIABZAXXXXX G0/0/3.938712639812"
+    puts "\n"
+    puts "  Para se conectar ao dispositivo:"
+    puts "  juniper <device>"
+    puts "  Exemplo:juniper CTIABZAXXXXX"
+    puts "\n"
     exit 0
-    
 }
 
 set timeout 10
@@ -60,6 +47,35 @@ set password $env(PASS_JUNIPER)
 set command_responses ""
 set final_report "=========================\n"
 
+
+#Conexão simples
+#eq valida que seja vazio o argumento "ne" valida que nao seja igual
+if { $user ne "" && $password ne "" && $device ne "" && $interface eq "" } {
+    puts "Conectando ao juniper..."
+    spawn telnet $device
+
+    expect "Username:"
+    send "$user\r"
+
+    expect "Password:"
+    send "$password\r"
+
+    expect "RP"
+    interact
+    exit 0
+}
+
+if { $device eq ""} {
+    puts "\nErro: Dispositivo não especificado."
+    puts "Use: juniper -h, para obter mais ajuda em caso de dúvidas.\n"
+    exit 1
+} elseif {$user ne "" && $password ne ""} {
+    puts "\nErro: Usuário ou senha não especificados."
+    puts "Use: juniper -h, para obter mais ajuda em caso de dúvidas.\n"
+    exit 1
+} 
+
+#teste de macs
 # Guardar o valor da interface fisica
 if {[string match "*.*" $interface]} {
     set physical_interface [lindex [split $interface "."] 0]
@@ -77,7 +93,7 @@ send "$user\r"
 expect "Password:"
 send "$password\r"
 
-# Espera prompt de modo operacional (ajuste conforme o prompt do seu sistema)
+# Espera prompt de modo operacional 
 expect "RP"
 
 send "sh interface $physical_interface\r"

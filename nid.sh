@@ -4,6 +4,7 @@ cat << 'EOF' > nid
 #Created by Alejandro Amoroso
 #Github: https://github.com/LdeAlejandro
 
+# Define o diretório absoluto onde o script está localizado
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Carrega variáveis de ambiente
@@ -21,27 +22,81 @@ cat << 'EOF' > nid.exec
 #Github: https://github.com/LdeAlejandro
 # Checa se o usuário pediu ajuda ou não passou os argumentos necessários
 if { $argc < 2 || [lindex $argv 0] in {"--help" "-h"} } {
-    puts "\n USO DO SCRIPT:"
-    puts " nid <device> <interface>\n"
-    puts "VARIÁVEIS NECESSÁRIAS:"
-    puts "Ip do NID"
-    puts "número de porta do cliente → um número só"
-    puts "número de porta da lec → um número só" 
-    puts "EXEMPLO:"
-    puts "IP_DO_NID NUMERO_DE_PORTA_LEC NUMERO_DE_PORTA_CLIENTE "
-    puts "Comando de exemplo: nid 10.226.126.112 1 3"
+    puts "\n"
+    puts "Documentação dos comandos NID"
+    puts "  <device>        → IP ou hostname do equipamento (ex: 10.227.127.117)"
+    puts "  <porta-lec>     → número da interface da lec (Se for: 1-1-1-3 então: 3)"
+    puts "  <porta-cliente> → número da porta do cliente (Se for: 1-1-1-4 então: 4)"
+    puts "  <arp> → arp"
+
+    puts "\n"
+    puts "  EXEMPLOS:"
+    puts "  Para conectar-se ao NID e validar interfaces, use o comando:"
+    puts "  nid <device> <porta-lec> <porta-cliente>"
+    puts "  Exemplo: nid 10.227.127.117 1 3"
+    puts "\n"
+
+    puts "  Para conectar-se ao NID apenas, use o comando:"
+    puts "  nid <device>"
+    puts "  Exemplo: nid 10.227.127.117"
+    puts "\n"
+
+    puts "  Para conectar-se ao NID e validar tabela arp, use o comando:"
+    puts "  nid <device> arp"
+    puts "  Comando de exemplo: nid 10.227.127.117 arp"
+    puts "\n"
     exit 0
 }
 
-
 set timeout 10
 set device [lindex $argv 0]
-set cliente_interface [lindex $argv 1]
-set lec_interface [lindex $argv 2]
+set firstArg [lindex $argv 1]
+set secondArg [lindex $argv 2]
 set user $env(USER_NID)
 set password $env(PASS_NID)
 set command_responses ""
 set final_report "=========================\n"
+
+#Conexão simples
+#eq valida que seja vazio o argumento "ne" valida que nao seja igual
+if { $user ne "" && $password ne "" && $device ne "" && $firstArg eq "" && $secondArg eq "" } {
+    puts "Conectando ao NID..."
+    spawn ssh $user@$device
+    expect {
+        -re "Are you sure you want to continue connecting.*" {
+            send "yes\r"
+            exp_continue
+        }
+        -re ".*password:" {
+            send "$password\r"
+        }
+    }
+    interact
+    exit 0
+}
+
+#Conexão e ARP
+if { $user ne "" && $password ne "" && $device ne "" && $firstArg eq "arp"} {
+    puts "Conectando ao NID validando ARP..."
+    spawn ssh $user@$device
+    expect {
+        -re "Are you sure you want to continue connecting.*" {
+            send "yes\r"
+            exp_continue
+        }
+        -re ".*password:" {
+            send "$password\r"
+        }
+    }
+
+    #envia  comando arp
+    expect -re ".*-->"
+    send "sh arp\r"
+    interact
+    exit 0
+}
+
+#Teste mais completos
 
 # Inicia a sessão telnet -o StrictHostKeyChecking=no
 spawn ssh   $user@$device
@@ -85,31 +140,31 @@ append final_report "NID: $device \nSystem Up Time: $uptime_trimmed\n"
 
 # Espera prompt de modo operacional 
 #expect -re ".*-->"
-send "sh access-port access-1-1-1-$lec_interface\r"
+send "sh access-port access-1-1-1-$secondArg\r"
 
 #capturar dados
-set lec_interface_output ""
+set secondArg_output ""
 expect {
     -exact "--More--" {
-        append lec_interface_output $expect_out(buffer)
+        append secondArg_output $expect_out(buffer)
         send " "
         exp_continue
     }
     -re ".*-->" {
-        append lec_interface_output $expect_out(buffer)
-        append command_responses "$lec_interface_output\n"
+        append secondArg_output $expect_out(buffer)
+        append command_responses "$secondArg_output\n"
     }
 }
 
 # Extração da linha do adminstration state
-regexp {Admin State\s*:\s*(.+)} $lec_interface_output -> lec_int_admin_state
-regexp {Operational State\s*:\s*(.+)} $lec_interface_output -> lec_int_operational_state
+regexp {Admin State\s*:\s*(.+)} $secondArg_output -> lec_int_admin_state
+regexp {Operational State\s*:\s*(.+)} $secondArg_output -> lec_int_operational_state
 
 # Usar splits"
 set lec_admin_state_trimmed [lindex [split $lec_int_admin_state "O"] 0]
 set lec_operational_state_trimmed [lindex [split $lec_int_operational_state"S"] 0]
 append final_report "\n---------------------------\n"
-append final_report "Lec Interface: 1-1-1-$lec_interface\n"
+append final_report "Lec Interface: 1-1-1-$secondArg\n"
 append final_report "\nAdmin State: $lec_admin_state_trimmed\n"
 append final_report "Operational State: $lec_operational_state_trimmed\n"
 append final_report "\n---------------------------\n"
@@ -118,30 +173,30 @@ append final_report "\n---------------------------\n"
 
 # Espera prompt de modo operacional 
 #expect -re ".*-->"
-send "sh network-port network-1-1-1-$cliente_interface\r"
+send "sh network-port network-1-1-1-$firstArg\r"
 
 #capturar dados
-set cliente_interface_output ""
+set firstArg_output ""
 expect {
     -regexp "--More--" {
-        append cliente_interface_output $expect_out(buffer)
+        append firstArg_output $expect_out(buffer)
         send " "
         exp_continue
     }
     -re ".*NID" {
-        append cliente_interface_output $expect_out(buffer)
-        append command_responses "$cliente_interface_output\n"
+        append firstArg_output $expect_out(buffer)
+        append command_responses "$firstArg_output\n"
     }
 }
 
 # Extração da linha do adminstration state
-regexp {Admin State\s*:\s*(.+)} $cliente_interface_output -> client_int_admin_state
-regexp {Operational State\s*:\s*(.+)} $cliente_interface_output -> client_int_operational_state
+regexp {Admin State\s*:\s*(.+)} $firstArg_output -> client_int_admin_state
+regexp {Operational State\s*:\s*(.+)} $firstArg_output -> client_int_operational_state
 
 # Usar splits"
 set client_admin_state_trimmed [lindex [split $client_int_admin_state "O"] 0]
 set client_operational_state_trimmed [lindex [split $client_int_operational_state"S"] 0]
-append final_report "Client Interface:1-1-1-$cliente_interface\n"
+append final_report "Client Interface:1-1-1-$firstArg\n"
 append final_report "\nAdmin State: $client_admin_state_trimmed\n"
 append final_report "Operational State: $client_operational_state_trimmed\n"
 
@@ -168,9 +223,9 @@ send "network-element ne-1\r"
 expect -re ".*-->"
 send "configure nte nte114pro-1-1-1\r"
 expect -re ".*-->"
-send "configure access-port access-1-1-1-$lec_interface\r"
+send "configure access-port access-1-1-1-$secondArg\r"
 expect -re ".*-->"
-send "configure flow flow-1-1-1-$lec_interface-1\r"
+send "configure flow flow-1-1-1-$secondArg-1\r"
 expect -re ".*-->"
 send "network-learning-ctrl mac-based\r"
 expect -re ".*-->"
