@@ -124,18 +124,18 @@ expect {
         # guardar resposta do comando
         append command_responses "$output\n"
 
-        append final_report "Mac Learning $interface OK: está aprendendo MACs\n"
+        append final_report " OK Mac Learning $interface: está aprendendo MACs\n"
     }
     timeout {
-        append final_report "Mac Learning $interface FAIL: Timeout esperando resposta do comando para $interface Nenhuma MAC encontrada para $interface\n"
+        append final_report " FAIL: Mac Learning $interface: Timeout esperando resposta do comando para $interface Nenhuma MAC encontrada para $interface\n"
 
     }
     eof {
-        append final_report "Mac Learning $interface FAIL: Nenhuma MAC encontrada para $interface\n"
+        append final_report "FAIL Mac Learning $interface : Nenhuma MAC encontrada para $interface\n"
     }
 }
 puts "\n=========================\n"
-puts "\n Resumo dos comandos executados:\n"
+#puts "\n Resumo dos comandos executados:\n"
 puts "Device: $device"
 puts "$command_responses"
 puts "\n=========================\n"
