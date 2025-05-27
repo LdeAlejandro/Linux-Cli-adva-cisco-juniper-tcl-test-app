@@ -88,6 +88,7 @@ if ! grep -Fxq "$ip $cliente $provedor" "$IP_STORE"; then
   ~/.local/bin/cirion-monitor
 else
   echo "ℹ️  IP $ip já está sendo monitorado."
+  ~/.local/bin/cirion-monitor
 fi
 
 EOF
