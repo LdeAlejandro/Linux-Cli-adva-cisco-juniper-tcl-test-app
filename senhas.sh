@@ -10,6 +10,8 @@ export USER_NID=seuusuario
 export PASS_NID=suasenha
 export USER_CPE=seuusuario
 export PASS_CPE=suasenha
+export USER_PSR=seuusuario
+export PASS_PSR=suasenha
 EOF
 chmod +x variaveis_ambiente.sh
 source variaveis_ambiente.sh
