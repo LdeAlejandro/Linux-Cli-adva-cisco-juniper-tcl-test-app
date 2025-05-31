@@ -25,7 +25,8 @@ if { $argc < 2 || [lindex $argv 0] in {"--help" "-h"} } {
     puts "\n"
     puts "Documentação dos comandos psr"
     puts "  <device>        → IP ou hostname do equipamento (ex: PS1.TAT)"
-    puts "  <bgp> → bgp"
+    puts "  <bgp>           → bgp"
+    puts "  <interface>     → ae3.1856"
 
     puts "\n"
     puts "  EXEMPLOS:"
@@ -36,8 +37,8 @@ if { $argc < 2 || [lindex $argv 0] in {"--help" "-h"} } {
     puts "\n"
 
     puts "  Para conectar-se ao psr e validar bgp, use o comando:"
-    puts "  psr <device> bgp"
-    puts "  Comando de exemplo: psr PS1.TAT bgp"
+    puts "  psr <device> bgp <interface>"
+    puts "  Comando de exemplo: psr PS1.TAT bgp ae3.1856"
     puts "\n"
     exit 0
 }
