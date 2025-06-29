@@ -218,3 +218,4 @@ mv cirion-monitor ~/.local/bin/
 mv cirion-monitor.exec ~/.local/bin/
 chmod +x ~/.local/bin/cirion-ping
 chmod +x ~/.local/bin/cirion-ping.exec
+chmod +x ~/.local/bin/cirion-monitor
